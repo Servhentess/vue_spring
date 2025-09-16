@@ -1,22 +1,7 @@
 <template>
-  <main>
-    <h1>Frontend prêt</h1>
-    <p>Partez d’ici pour votre app.</p>
-  </main>
+  <RaceList />
 </template>
 
-<script setup>
-// rien pour l’instant
+<script setup lang="ts">
+import RaceList from './components/RaceList.vue'
 </script>
-
-<style>
-main {
-  max-width: 720px;
-  margin: 4rem auto;
-  font-family: system-ui, sans-serif;
-}
-h1 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-</style>
