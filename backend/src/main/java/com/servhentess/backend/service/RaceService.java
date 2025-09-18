@@ -13,13 +13,16 @@ import java.util.Map;
 @Service
 public class RaceService {
 
+    /********* Variables *********/
     private final RaceRepository repo;
     private final ObjectMapper mapper = new ObjectMapper();
 
+    /********* Constructeur *********/
     public RaceService(RaceRepository repo) {
         this.repo = repo;
     }
 
+    /********* Services *********/
     public List<RaceResponse> listAll() {
         return repo.findAll().stream()
                 .map(this::toResponse)
