@@ -10,12 +10,15 @@ import java.util.List;
 @RequestMapping("/api/races")
 public class RaceController {
 
+    /********* Variables *********/
     private final RaceService service;
 
+    /********* Constructeur *********/
     public RaceController(RaceService service) {
         this.service = service;
     }
 
+    /********* Controle *********/
     @GetMapping
     public List<RaceResponse> list() {
         return service.listAll();
