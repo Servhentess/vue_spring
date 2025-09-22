@@ -1,7 +1,5 @@
 package com.servhentess.backend.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.servhentess.backend.domain.Race;
 import com.servhentess.backend.repository.RaceRepository;
 import com.servhentess.backend.web.dto.RaceResponse;
@@ -15,7 +13,6 @@ public class RaceService {
 
     /********* Variables *********/
     private final RaceRepository repo;
-    private final ObjectMapper mapper = new ObjectMapper();
 
     /********* Constructeur *********/
     public RaceService(RaceRepository repo) {
@@ -36,15 +33,7 @@ public class RaceService {
     }
 
     private RaceResponse toResponse(Race r) {
-        Map<String, Object> caracs = parseJson(r.getCaracsJson());
+        Map<String, Integer> caracs = r.getCaracs();
         return new RaceResponse(r.getId(), r.getCode(), r.getLibelle(), r.getDescription(), caracs);
-    }
-
-    private Map<String, Object> parseJson(String json) {
-        try {
-            return mapper.readValue(json, new TypeReference<>() {});
-        } catch (Exception e) {
-            throw new IllegalStateException("Caracs JSON invalide pour la race", e);
-        }
     }
 }

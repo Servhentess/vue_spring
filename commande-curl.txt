@@ -1,0 +1,10 @@
+curl -X POST http://localhost:8082/api/personnages \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "drazhiel-001",
+    "nom": "Drazhiel",
+    "niveau": 1,
+    "raceCode": "ELFE_NOIR",
+    "classeCode": "VOLEUR",
+    "caracs": { "force": 8, "dexterite": 13, "intelligence": 11, "vie": 9 }
+  }'

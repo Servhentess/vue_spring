@@ -1,5 +1,10 @@
 package com.servhentess.backend.domain;
 
+import java.util.Map;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -26,7 +31,18 @@ public class Classe {
 
     // Colonne caracs
     @Column(name = "caracs", nullable = false, columnDefinition = "jsonb")
-    private String caracsJson;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Integer> caracs;
+
+    /********* Constructeur *********/
+    public Classe(){}
+
+    public Classe(String code, String libelle, String description, Map<String, Integer> caracs) {
+        this.code = code;
+        this.libelle = libelle;
+        this.description = description;
+        this.caracs = caracs;
+    }
 
     /*********Guetter and Setter *********/
     public Long getId() { return id; }
@@ -41,6 +57,6 @@ public class Classe {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public String getCaracsJson() { return caracsJson; }
-    public void setCaracsJson(String caracsJson) { this.caracsJson = caracsJson; }
+    public Map<String, Integer> getCaracs() { return caracs; }
+    public void setCaracs(Map<String, Integer> caracs) { this.caracs = caracs; }
 }
