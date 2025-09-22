@@ -6,5 +6,5 @@ curl -X POST http://localhost:8082/api/personnages \
     "niveau": 1,
     "raceCode": "ELFE_NOIR",
     "classeCode": "VOLEUR",
-    "caracs": { "force": 8, "dexterite": 13, "intelligence": 11, "vie": 9 }
+    "caracs": { "force": 1, "dexterite": 2, "intelligence": 3, "vie": 4 }
   }'
