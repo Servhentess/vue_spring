@@ -1,6 +1,10 @@
 package com.servhentess.backend.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.Map;
 
 @Entity
 @Table(name = "races")
@@ -20,13 +24,37 @@ public class Race {
     @Column(name = "description")
     private String description;
 
-    // JSONB stocké tel quel. On le parsera côté service pour l'API.
+    /**
+     * Caractéristiques de la race, stockées en JSONB.
+     * Exemple :
+     * {
+     *   "force": 1,
+     *   "dex": 2,
+     *   "int": 0,
+     *   "endu": 1,
+     *   "cha": -1
+     * }
+     */
     @Column(name = "caracs", nullable = false, columnDefinition = "jsonb")
-    private String caracsJson;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Integer> caracs;
 
-    // Getters/Setters
+    // --------- Constructeurs ---------
+
+    protected Race() {
+        // requis par JPA
+    }
+
+    public Race(String code, String libelle, String description, Map<String, Integer> caracs) {
+        this.code = code;
+        this.libelle = libelle;
+        this.description = description;
+        this.caracs = caracs;
+    }
+
+    // --------- Getters / Setters ---------
+
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }
@@ -37,6 +65,6 @@ public class Race {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public String getCaracsJson() { return caracsJson; }
-    public void setCaracsJson(String caracsJson) { this.caracsJson = caracsJson; }
+    public Map<String, Integer> getCaracs() { return caracs; }
+    public void setCaracs(Map<String, Integer> caracs) { this.caracs = caracs; }
 }

@@ -8,5 +8,6 @@ public record PersonnageResponse (
     int niveau,
     String raceCode,
     String classeCode,
-    Map<String, Integer> caracs
+    Map<String, Integer> caracs,
+    Map<String, Integer> caracsCombinees
 ){}

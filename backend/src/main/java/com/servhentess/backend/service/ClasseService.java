@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.servhentess.backend.domain.Classe;
 import com.servhentess.backend.repository.ClasseRepository;
 import com.servhentess.backend.web.dto.ClasseResponse;
@@ -16,7 +13,6 @@ public class ClasseService {
 
     /********* Variables *********/
     private final ClasseRepository repo;
-    private final ObjectMapper mapper = new ObjectMapper();
 
     /********* Constructeur *********/
     public ClasseService (ClasseRepository repo) {
@@ -37,15 +33,7 @@ public class ClasseService {
     }
 
     private ClasseResponse toResponse(Classe c) {
-        Map<String, Object> caracs = parseJson(c.getCaracsJson());
+        Map<String, Integer> caracs = c.getCaracs();
         return new ClasseResponse(c.getId(), c.getCode(), c.getLibelle(), c.getDescription(), caracs);
-    }
-
-    private Map<String, Object> parseJson(String json) {
-        try {
-            return mapper.readValue(json, new TypeReference<>() {});
-        } catch (Exception e) {
-            throw new IllegalStateException("Caracs JSON invalide pour la race", e);
-        }
     }
 }
