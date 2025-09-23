@@ -7,8 +7,7 @@ curl -X POST http://localhost:8082/api/personnages \
     "nom": "Drazhiel",
     "niveau": 1,
     "raceCode": "ELFE_NOIR",
-    "classeCode": "VOLEUR",
-    "caracs": { "force": 8, "dexterite": 13, "intelligence": 11, "vie": 9 }
+    "classeCode": "VOLEUR"
   }'
 
 Chercher perso :

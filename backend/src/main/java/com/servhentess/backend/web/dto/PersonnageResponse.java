@@ -9,5 +9,6 @@ public record PersonnageResponse (
     String raceCode,
     String classeCode,
     Map<String, Integer> caracs,
-    Map<String, Integer> caracsCombinees
+    Map<String, Integer> caracsCombinees,
+    Map<String, Integer> caracsMod
 ){}

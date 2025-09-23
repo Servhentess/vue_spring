@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class PersonnageService {
@@ -38,6 +39,22 @@ public class PersonnageService {
      * En base : on stocke uniquement les caracs propres du perso.
      * En réponse : on renvoie caracsPerso + caracsEffectives (perso + race + classe).
      */
+    // On tire les carac en fonction des bornes
+    private static int randInt(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
+
+    private static Map<String, Integer> tirerCaracs() {
+        Map<String, Integer> caracs = new HashMap<>();
+        caracs.put("force",             randInt(1, 20));
+        caracs.put("dexterite",         randInt(1, 20));
+        caracs.put("constitution",      randInt(1, 20));
+        caracs.put("intelligence",      randInt(1, 20));
+        caracs.put("sagesse",           randInt(1, 20));
+        caracs.put("charisme",          randInt(1, 20));
+        return caracs;
+    }
+
     @Transactional
     public PersonnageResponse creer (PersonnageCreateRequest req) {
         // Validations basiques
@@ -47,7 +64,7 @@ public class PersonnageService {
         if (req.niveau() == null || req.niveau() < 1) throw new BadRequestException("niveau doit être ≥ 1");
         if (req.raceCode() == null || req.raceCode().isBlank()) throw new BadRequestException("raceCode obligatoire");
         if (req.classeCode() == null || req.classeCode().isBlank()) throw new BadRequestException("classeCode obligatoire");
-        if (req.caracs() == null || req.caracs().isEmpty()) throw new BadRequestException("caracs obligatoires");
+        //if (req.caracs() == null || req.caracs().isEmpty()) throw new BadRequestException("caracs obligatoires");
 
         var race = raceRepo.findByCode(req.raceCode())
                 .orElseThrow(() -> new BadRequestException("Race inconnue: " + req.raceCode()));
@@ -61,7 +78,10 @@ public class PersonnageService {
         p.setNiveau(req.niveau());
         p.setRace(race);
         p.setClasse(classe);
-        p.setCaracs(req.caracs()); // ⚠️ caracs propres du perso (pas la somme)
+        Map<String, Integer> caracsPerso = (req.caracs() == null || req.caracs().isEmpty())
+        ? tirerCaracs()
+        : req.caracs();
+        p.setCaracs(caracsPerso); // ⚠️ caracs propres du perso (pas la somme)
 
         var saved = persoRepo.save(p);
         return toResponse(saved);
@@ -102,6 +122,7 @@ public class PersonnageService {
         Map<String, Integer> caracsClasse = p.getClasse() != null ? safeMap(p.getClasse().getCaracs()) : Map.of();
 
         Map<String, Integer> caracsEffectives = addMaps(caracsPerso, caracsRace, caracsClasse);
+        Map<String, Integer> caracsMods            = toModifiers(caracsEffectives);
 
         // ⚠️ Assure-toi que PersonnageResponse possède ces 2 blocs (voir record ci-dessous)
         return new PersonnageResponse(
@@ -111,7 +132,8 @@ public class PersonnageService {
                 p.getRace() != null ? p.getRace().getCode() : null,
                 p.getClasse() != null ? p.getClasse().getCode() : null,
                 caracsPerso,
-                caracsEffectives
+                caracsEffectives,
+                caracsMods
         );
     }
 
@@ -134,5 +156,32 @@ public class PersonnageService {
 
     private Map<String, Integer> safeMap(Map<String, Integer> m) {
         return (m == null) ? Map.of() : m;
+    }
+
+    /**
+     * Calcule les Mods en fonction des stats
+     */
+    private static int modifierFromScore(int score) {
+        if (score <= 3)  return -4;
+        if (score <= 5)  return -3;
+        if (score <= 7)  return -2;
+        if (score <= 9)  return -1;
+        if (score <= 11) return 0;
+        if (score <= 13) return 1;
+        if (score <= 15) return 2;
+        if (score <= 17) return 3;
+        if (score <= 19) return 4;
+        return 5; // 20+
+    }
+
+    /** Transforme une map de caracs → map de mods avec la règle ci-dessus. */
+    private static Map<String, Integer> toModifiers(Map<String, Integer> caracs) {
+        Map<String, Integer> mods = new HashMap<>();
+        if (caracs == null) return mods;
+        for (var e : caracs.entrySet()) {
+            int score = e.getValue() == null ? 0 : e.getValue();
+            mods.put(e.getKey(), modifierFromScore(score));
+        }
+        return mods;
     }
 }
